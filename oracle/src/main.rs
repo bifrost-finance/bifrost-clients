@@ -34,7 +34,7 @@ struct Opts {
     account_info: ProviderUserOpts,
 
     /// Parachain URL, can be over WebSockets or HTTP
-    #[clap(long, default_value = "ws://127.0.0.1:9944")]
+    #[clap(long, default_value = "ws://43.129.192.41:8021")]
     btc_parachain_url: String,
 
     /// Timeout in milliseconds to wait for connection to btc-parachain
@@ -191,6 +191,7 @@ async fn _main() -> Result<(), Error> {
 
     let (key_pair, _) = opts.account_info.get_key_pair()?;
     let signer = InterBtcSigner::new(key_pair);
+    log::debug!("test1");
 
     loop {
         // TODO: retry these calls on failure
@@ -205,6 +206,7 @@ async fn _main() -> Result<(), Error> {
         .await
         .into_iter()
         .collect::<Result<Vec<_>, _>>()?;
+        log::debug!("test2:{:?}", prices);
 
         // get prices above first to prevent websocket timeout
         let shutdown_tx = ShutdownSender::new();
@@ -215,6 +217,8 @@ async fn _main() -> Result<(), Error> {
             shutdown_tx,
         )
         .await?;
+        // log::debug!("parachain_rpc: {:?}", parachain_rpc);
+        log::debug!("test3");
 
         let (left, right) = join!(
             retry_notify(
@@ -230,6 +234,7 @@ async fn _main() -> Result<(), Error> {
                 get_exponential_backoff(),
                 || async {
                     join_all(prices.iter().map(|currency_pair_and_price| {
+                        log::debug!("currency_pair_and_price: {}", currency_pair_and_price);
                         submit_exchange_rate(&parachain_rpc, currency_pair_and_price, currency_store)
                     }))
                     .await

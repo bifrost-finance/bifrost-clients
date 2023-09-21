@@ -108,6 +108,10 @@ pub struct ConnectionOpts {
         feature = "parachain-metadata-interlay",
         clap(long, default_value = "wss://api.interlay.io:443/parachain")
     )]
+    #[cfg_attr(
+        feature = "parachain-metadata-bifrost",
+        clap(long, default_value = "wss://bifrost.test-lend-market.liebi.com/ws")
+    )]
     pub btc_parachain_url: String,
 
     /// Timeout in milliseconds to wait for connection to btc-parachain.

@@ -1,0 +1,80 @@
+{
+    "currencies": {
+        "BTC": {
+            "name": "Bitcoin",
+            "decimals": 8
+        },
+        "KINT": {
+            "name": "Kintsugi",
+            "decimals": 12
+        },
+        "KSM": {
+            "name": "Kusama",
+            "decimals": 12
+        },
+        "LKSM": {
+            "name": "Liquid KSM",
+            "decimals": 12
+        },
+        "USD": {
+            "name": "United States Dollar",
+            "decimals": 2
+        },
+        "USDT": {
+            "name": "Tether",
+            "decimals": 6
+        }
+    },
+    "prices": [
+        {
+            "pair": [
+                "BTC",
+                "KINT"
+            ],
+            "feeds": {
+                "coingecko": [
+                    [
+                        "KINT",
+                        "BTC"
+                    ]
+                ]
+            }
+        },
+        {
+            "pair": [
+                "BTC",
+                "KSM"
+            ],
+            "feeds": {
+                "coingecko": [
+                    [
+                        "KSM",
+                        "BTC"
+                    ]
+                ]
+            }
+        },
+        {
+            "pair": [
+                "BTC",
+                "LKSM"
+            ],
+            "feeds": {
+                "coingecko": [
+                    [
+                        "LKSM=liquid-ksm",
+                        "BTC"
+                    ]
+                ]
+            }
+        },
+        {
+            "pair": [
+                "BTC",
+                "VKSM"
+            ],
+            "feeds": {
+            }
+        }
+    ]
+}

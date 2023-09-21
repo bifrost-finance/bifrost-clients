@@ -27,6 +27,7 @@ pub(crate) async fn new_websocket_client_with_retry(
     connection_timeout: Duration,
 ) -> Result<WsClient, Error> {
     log::info!("Connecting to the btc-parachain...");
+    log::info!("url:{:?}", url);
     timeout(connection_timeout, async move {
         loop {
             match new_websocket_client(url, max_concurrent_requests, max_notifs_per_subscription).await {

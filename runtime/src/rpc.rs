@@ -59,8 +59,12 @@ cfg_if::cfg_if! {
         pub const DEFAULT_SPEC_NAME: &str = "interlay-parachain";
         pub const SS58_PREFIX: u16 = 2032;
     } else if #[cfg(feature = "parachain-metadata-kintsugi")] {
-        const DEFAULT_SPEC_VERSION: Range<u32> = 1025000..1026000;
-        pub const DEFAULT_SPEC_NAME: &str = "kintsugi-parachain";
+        const DEFAULT_SPEC_VERSION: Range<u32> = 982..1082;
+        pub const DEFAULT_SPEC_NAME: &str = "bifrost";
+        pub const SS58_PREFIX: u16 = 2092;
+    } else if #[cfg(feature = "parachain-metadata-bifrost")] {
+        const DEFAULT_SPEC_VERSION: Range<u32> = 982..1082;
+        pub const DEFAULT_SPEC_NAME: &str = "bifrost";
         pub const SS58_PREFIX: u16 = 2092;
     }
 }
