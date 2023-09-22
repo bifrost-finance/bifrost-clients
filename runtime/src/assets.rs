@@ -1,4 +1,4 @@
-use crate::{types::*, AssetMetadata, Error};
+use crate::{metadata::runtime_types::bifrost_asset_registry::pallet::AssetMetadata, types::*, Error};
 use lazy_static::lazy_static;
 use primitives::{CurrencyId, CurrencyInfo};
 use std::{
@@ -6,70 +6,70 @@ use std::{
     sync::{Mutex, MutexGuard},
 };
 
-lazy_static! {
-    // NOTE: restrict access to the lock to ensure that no async code yields while holding the mutex
-    static ref ASSET_REGISTRY: Mutex<AssetRegistry> = Mutex::new(AssetRegistry::default());
-}
+// lazy_static! {
+//     // NOTE: restrict access to the lock to ensure that no async code yields while holding the mutex
+//     static ref ASSET_REGISTRY: Mutex<AssetRegistry<_0>> = Mutex::new(AssetRegistry::default());
+// }
 
 /// The symbol of Lend Tokens is the symbol of their underlying currency,
 /// prefixed by `Q`. Example: `QDOT` is the `DOT` lend token symbol.
 const LEND_TOKEN_SYMBOL_PREFIX: char = 'Q';
 
 #[derive(Debug, Clone, Default)]
-pub struct AssetRegistry {
+pub struct AssetRegistry<_0> {
     symbol_lookup: BTreeMap<String, u32>,
-    metadata_lookup: BTreeMap<u32, AssetMetadata>,
+    metadata_lookup: BTreeMap<u32, AssetMetadata<_0>>,
 }
 
-impl AssetRegistry {
-    /// Fetch the global, mutable singleton
-    fn global() -> Result<MutexGuard<'static, Self>, Error> {
-        ASSET_REGISTRY.lock().map_err(|_| Error::CannotOpenAssetRegistry)
-    }
+// impl<_0> AssetRegistry<_0> {
+//     /// Fetch the global, mutable singleton
+//     fn global() -> Result<MutexGuard<'static, Self>, Error> {
+//         ASSET_REGISTRY.lock().map_err(|_| Error::CannotOpenAssetRegistry)
+//     }
 
-    fn inner_insert(&mut self, foreign_asset_id: u32, asset_metadata: AssetMetadata) -> Result<(), Error> {
-        let asset_name = String::from_utf8(asset_metadata.symbol.clone())
-            .map_err(|_| Error::InvalidCurrency)?
-            .to_uppercase();
-        log::info!("Found asset: {}", asset_name);
-        self.symbol_lookup.insert(asset_name, foreign_asset_id);
-        self.metadata_lookup.insert(foreign_asset_id, asset_metadata);
-        Ok(())
-    }
+//     fn inner_insert(&mut self, foreign_asset_id: u32, asset_metadata: AssetMetadata<_0>) -> Result<(), Error> {
+//         let asset_name = String::from_utf8(asset_metadata.symbol.clone())
+//             .map_err(|_| Error::InvalidCurrency)?
+//             .to_uppercase();
+//         log::info!("Found asset: {}", asset_name);
+//         self.symbol_lookup.insert(asset_name, foreign_asset_id);
+//         self.metadata_lookup.insert(foreign_asset_id, asset_metadata);
+//         Ok(())
+//     }
 
-    pub fn insert(foreign_asset_id: u32, asset_metadata: AssetMetadata) -> Result<(), Error> {
-        let mut asset_registry = Self::global()?;
-        asset_registry.inner_insert(foreign_asset_id, asset_metadata)?;
-        Ok(())
-    }
+//     pub fn insert(foreign_asset_id: u32, asset_metadata: AssetMetadata<_0>) -> Result<(), Error> {
+//         let mut asset_registry = Self::global()?;
+//         asset_registry.inner_insert(foreign_asset_id, asset_metadata)?;
+//         Ok(())
+//     }
 
-    pub(crate) fn extend(assets: Vec<(u32, AssetMetadata)>) -> Result<(), Error> {
-        let mut asset_registry = Self::global()?;
-        for (foreign_asset_id, asset_metadata) in assets {
-            // TODO: check for duplicates?
-            asset_registry.inner_insert(foreign_asset_id, asset_metadata)?;
-        }
-        Ok(())
-    }
+//     pub(crate) fn extend(assets: Vec<(u32, AssetMetadata<_0>)>) -> Result<(), Error> {
+//         let mut asset_registry = Self::global()?;
+//         for (foreign_asset_id, asset_metadata) in assets {
+//             // TODO: check for duplicates?
+//             asset_registry.inner_insert(foreign_asset_id, asset_metadata)?;
+//         }
+//         Ok(())
+//     }
 
-    /// Fetch the currency for a ticker symbol
-    pub fn get_foreign_asset_by_symbol(symbol: String) -> Result<CurrencyId, Error> {
-        Self::global()?
-            .symbol_lookup
-            .get(&symbol)
-            .map(|foreign_asset_id| CurrencyId::ForeignAsset(*foreign_asset_id))
-            .ok_or(Error::AssetNotFound)
-    }
+//     /// Fetch the currency for a ticker symbol
+//     pub fn get_foreign_asset_by_symbol(symbol: String) -> Result<CurrencyId, Error> {
+//         Self::global()?
+//             .symbol_lookup
+//             .get(&symbol)
+//             .map(|foreign_asset_id| CurrencyId::ForeignAsset(*foreign_asset_id))
+//             .ok_or(Error::AssetNotFound)
+//     }
 
-    /// Fetch the asset metadata for a foreign asset
-    pub fn get_asset_metadata_by_id(foreign_asset_id: u32) -> Result<AssetMetadata, Error> {
-        Self::global()?
-            .metadata_lookup
-            .get(&foreign_asset_id)
-            .cloned()
-            .ok_or(Error::AssetNotFound)
-    }
-}
+//     /// Fetch the asset metadata for a foreign asset
+//     pub fn get_asset_metadata_by_id(foreign_asset_id: u32) -> Result<AssetMetadata<_0>, Error> {
+//         Self::global()?
+//             .metadata_lookup
+//             .get(&foreign_asset_id)
+//             .cloned()
+//             .ok_or(Error::AssetNotFound)
+//     }
+// }
 
 lazy_static! {
     // NOTE: restrict access to the lock to ensure that no async code yields while holding the mutex
@@ -132,39 +132,39 @@ impl LendingAssets {
 }
 
 /// Convert a ticker symbol into a `CurrencyId` at runtime
-pub trait TryFromSymbol: Sized {
-    fn try_from_symbol(symbol: String) -> Result<Self, Error>;
-    fn from_lend_token_symbol(symbol: &str) -> Option<Self>;
-}
+// pub trait TryFromSymbol: Sized {
+//     fn try_from_symbol(symbol: String) -> Result<Self, Error>;
+//     // fn from_lend_token_symbol(symbol: &str) -> Option<Self>;
+// }
 
-impl TryFromSymbol for CurrencyId {
-    fn try_from_symbol(symbol: String) -> Result<Self, Error> {
-        let uppercase_symbol = symbol.to_uppercase();
-        // try hardcoded currencies first
-        match uppercase_symbol.as_str() {
-            id if id == DOT.symbol() => Ok(Token(DOT)),
-            id if id == IBTC.symbol() => Ok(Token(IBTC)),
-            id if id == INTR.symbol() => Ok(Token(INTR)),
-            id if id == KSM.symbol() => Ok(Token(KSM)),
-            id if id == KBTC.symbol() => Ok(Token(KBTC)),
-            id if id == KINT.symbol() => Ok(Token(KINT)),
-            id if let Some(currency_id) = Self::from_lend_token_symbol(id) =>
-                Ok(currency_id),
-            _ => AssetRegistry::get_foreign_asset_by_symbol(uppercase_symbol),
-        }
-    }
+// impl TryFromSymbol for CurrencyId {
+//     fn try_from_symbol(symbol: String) -> Result<Self, Error> {
+//         let uppercase_symbol = symbol.to_uppercase();
+//         // try hardcoded currencies first
+//         match uppercase_symbol.as_str() {
+//             id if id == DOT.symbol() => Ok(Token(DOT)),
+//             id if id == IBTC.symbol() => Ok(Token(IBTC)),
+//             id if id == INTR.symbol() => Ok(Token(INTR)),
+//             id if id == KSM.symbol() => Ok(Token(KSM)),
+//             id if id == KBTC.symbol() => Ok(Token(KBTC)),
+//             id if id == KINT.symbol() => Ok(Token(KINT)),
+//             // id if let Some(currency_id) = Self::from_lend_token_symbol(id) =>
+//             //     Ok(currency_id),
+//             _ => AssetRegistry::get_foreign_asset_by_symbol(uppercase_symbol),
+//         }
+//     }
 
-    fn from_lend_token_symbol(symbol: &str) -> Option<Self> {
-        let uppercase_symbol = symbol.to_uppercase();
-        // Does the first character match the lend token prefix?
-        if uppercase_symbol.as_str().starts_with(LEND_TOKEN_SYMBOL_PREFIX) {
-            return Self::try_from_symbol(uppercase_symbol[1..].to_string())
-                .ok()
-                .and_then(|underlying_id| LendingAssets::get_lend_token_id(underlying_id).ok());
-        }
-        None
-    }
-}
+//     fn from_lend_token_symbol(symbol: &str) -> Option<Self> {
+//         let uppercase_symbol = symbol.to_uppercase();
+//         // Does the first character match the lend token prefix?
+//         if uppercase_symbol.as_str().starts_with(LEND_TOKEN_SYMBOL_PREFIX) {
+//             return Self::try_from_symbol(uppercase_symbol[1..].to_string())
+//                 .ok()
+//                 .and_then(|underlying_id| LendingAssets::get_lend_token_id(underlying_id).ok());
+//         }
+//         None
+//     }
+// }
 
 /// Fallible operations on currencies
 pub trait RuntimeCurrencyInfo {
@@ -174,52 +174,52 @@ pub trait RuntimeCurrencyInfo {
     fn coingecko_id(&self) -> Result<String, Error>;
 }
 
-impl RuntimeCurrencyInfo for CurrencyId {
-    fn symbol(&self) -> Result<String, Error> {
-        match self {
-            CurrencyId::Token(token_symbol) => Ok(token_symbol.symbol().to_string()),
-            CurrencyId::ForeignAsset(foreign_asset_id) => AssetRegistry::get_asset_metadata_by_id(*foreign_asset_id)
-                .and_then(|asset_metadata| {
-                    String::from_utf8(asset_metadata.symbol).map_err(|_| Error::InvalidCurrency)
-                }),
-            CurrencyId::LendToken(id) => {
-                let underlying_currency = LendingAssets::get_underlying_id(CurrencyId::LendToken(*id))?;
-                Ok(format!("{}{}", LEND_TOKEN_SYMBOL_PREFIX, underlying_currency.symbol()?))
-            }
-            _ => Err(Error::TokenUnsupported),
-        }
-    }
+// impl RuntimeCurrencyInfo for CurrencyId {
+//     fn symbol(&self) -> Result<String, Error> {
+//         match self {
+//             CurrencyId::Token(token_symbol) => Ok(token_symbol.symbol().to_string()),
+//             CurrencyId::ForeignAsset(foreign_asset_id) => AssetRegistry::get_asset_metadata_by_id(*foreign_asset_id)
+//                 .and_then(|asset_metadata| {
+//                     String::from_utf8(asset_metadata.symbol).map_err(|_| Error::InvalidCurrency)
+//                 }),
+//             CurrencyId::LendToken(id) => {
+//                 let underlying_currency = LendingAssets::get_underlying_id(CurrencyId::LendToken(*id))?;
+//                 Ok(format!("{}{}", LEND_TOKEN_SYMBOL_PREFIX, underlying_currency.symbol()?))
+//             }
+//             _ => Err(Error::TokenUnsupported),
+//         }
+//     }
 
-    fn decimals(&self) -> Result<u32, Error> {
-        match self {
-            CurrencyId::Token(token_symbol) => Ok(token_symbol.decimals().into()),
-            CurrencyId::ForeignAsset(foreign_asset_id) => {
-                AssetRegistry::get_asset_metadata_by_id(*foreign_asset_id).map(|asset_metadata| asset_metadata.decimals)
-            }
-            CurrencyId::LendToken(id) => {
-                let underlying_currency = LendingAssets::get_underlying_id(CurrencyId::LendToken(*id))?;
-                underlying_currency.decimals()
-            }
-            _ => Err(Error::TokenUnsupported),
-        }
-    }
+//     fn decimals(&self) -> Result<u32, Error> {
+//         match self {
+//             CurrencyId::Token(token_symbol) => Ok(token_symbol.decimals().into()),
+//             CurrencyId::ForeignAsset(foreign_asset_id) => {
+//                 AssetRegistry::get_asset_metadata_by_id(*foreign_asset_id).map(|asset_metadata| asset_metadata.decimals)
+//             }
+//             CurrencyId::LendToken(id) => {
+//                 let underlying_currency = LendingAssets::get_underlying_id(CurrencyId::LendToken(*id))?;
+//                 underlying_currency.decimals()
+//             }
+//             _ => Err(Error::TokenUnsupported),
+//         }
+//     }
 
-    fn one(&self) -> Result<u128, Error> {
-        let decimals = self.decimals()?;
-        Ok(10u128.pow(decimals))
-    }
+//     fn one(&self) -> Result<u128, Error> {
+//         let decimals = self.decimals()?;
+//         Ok(10u128.pow(decimals))
+//     }
 
-    fn coingecko_id(&self) -> Result<String, Error> {
-        match self {
-            CurrencyId::Token(token_symbol) => Ok(token_symbol.name().to_string().to_lowercase()),
-            CurrencyId::ForeignAsset(foreign_asset_id) => AssetRegistry::get_asset_metadata_by_id(*foreign_asset_id)
-                .and_then(|asset_metadata| {
-                    String::from_utf8(asset_metadata.additional.coingecko_id).map_err(|_| Error::InvalidCurrency)
-                }),
-            _ => Err(Error::TokenUnsupported),
-        }
-    }
-}
+//     fn coingecko_id(&self) -> Result<String, Error> {
+//         match self {
+//             CurrencyId::Token(token_symbol) => Ok(token_symbol.name().to_string().to_lowercase()),
+//             CurrencyId::ForeignAsset(foreign_asset_id) => AssetRegistry::get_asset_metadata_by_id(*foreign_asset_id)
+//                 .and_then(|asset_metadata| {
+//                     String::from_utf8(asset_metadata.additional.coingecko_id).map_err(|_| Error::InvalidCurrency)
+//                 }),
+//             _ => Err(Error::TokenUnsupported),
+//         }
+//     }
+// }
 
 #[cfg(test)]
 mod tests {

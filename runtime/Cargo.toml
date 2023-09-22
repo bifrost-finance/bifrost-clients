@@ -51,6 +51,11 @@ bitcoin = { path = "../bitcoin" }
 tempdir = { version = "0.3.7", optional = true }
 rand = { version = "0.7", optional = true }
 
+[dependencies.node-primitives]
+git = "https://github.com/bifrost-finance/bifrost"
+rev = "00212e55affb870d752bf8c47c1ac00a37fe6b4b"
+package = "node-primitives"
+
 [dependencies.primitives]
 git = "https://github.com/interlay/interbtc"
 rev = "700fcc9b9aab8f5337d62cb8f18c894722cf02f4"

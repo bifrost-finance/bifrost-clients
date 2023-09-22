@@ -3,9 +3,9 @@
 const DEFAULT_TESTING_CURRENCY: CurrencyId = Token(KSM);
 
 use super::{
-    BtcAddress, BtcPublicKey, BtcRelayPallet, CollateralBalancesPallet, CurrencyId, FixedPointNumber, FixedU128,
-    OraclePallet, RawBlockHeader, ReplacePallet, SecurityPallet, SudoPallet, Token, TryFromSymbol, VaultRegistryPallet,
-    KBTC, KINT, KSM,
+    BtcAddress, BtcPublicKey, CollateralBalancesPallet, CurrencyId, FixedPointNumber, FixedU128, OraclePallet,
+    RawBlockHeader, SecurityPallet, SudoPallet, Token, TryFromSymbol, KBTC, KINT,
+    KSM,
 };
 use crate::{
     integration::*, utils::account_id::AccountId32, FeedValuesEvent, OracleKey, RuntimeCurrencyInfo, VaultId, H160,

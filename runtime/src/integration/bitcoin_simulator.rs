@@ -3,7 +3,7 @@
 #![allow(unused_imports)]
 #![allow(unused_variables)]
 
-use crate::{BtcAddress, BtcRelayPallet, InterBtcParachain, PartialAddress, RawBlockHeader, H160, H256, U256};
+use crate::{BtcAddress, InterBtcParachain, PartialAddress, RawBlockHeader, H160, H256, U256};
 use async_trait::async_trait;
 use bitcoin::{
     bitcoin_primitives::{absolute::Height, block::Version, ScriptBuf, Target},

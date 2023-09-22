@@ -16,6 +16,9 @@ sp-io = { git = "https://github.com/paritytech//substrate", branch = "polkadot-v
 sp-keyring = { git = "https://github.com/paritytech//substrate", branch = "polkadot-v0.9.42" }
 sp-runtime = { git = "https://github.com/paritytech//substrate", branch = "polkadot-v0.9.42" }
 
+zenlink-protocol = { git = "https://github.com/zenlinkpro/Zenlink-DEX-Module", rev = "c32bb5f63bcd06dc49ca8a48dd7b7a0f78c358bf" }
+orml-oracle = { git = "https://github.com/open-web3-stack/open-runtime-module-library", rev = "4ae0372e2c624e6acc98305564b9d395f70814c0" }
+
 [patch."https://github.com/paritytech/substrate"]
 frame-support = { git = "https://github.com/paritytech//substrate", branch = "polkadot-v0.9.42" }
 frame-support-procedural = { git = "https://github.com/paritytech//substrate", branch = "polkadot-v0.9.42" }

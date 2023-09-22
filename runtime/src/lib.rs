@@ -21,7 +21,7 @@ pub mod integration;
 use subxt::config::SubstrateConfig;
 pub mod utils;
 pub use addr::PartialAddress;
-pub use assets::{AssetRegistry, LendingAssets, RuntimeCurrencyInfo, TryFromSymbol};
+pub use assets::{AssetRegistry, LendingAssets, RuntimeCurrencyInfo};
 use codec::{Decode, Encode};
 pub use error::{Error, SubxtError};
 pub use primitives::CurrencyInfo;
@@ -30,9 +30,8 @@ pub use retry::{notify_retry, RetryPolicy};
 #[cfg(feature = "testing-utils")]
 pub use rpc::SudoPallet;
 pub use rpc::{
-    BtcRelayPallet, CollateralBalancesPallet, FeePallet, FeeRateUpdateReceiver, InterBtcParachain, IssuePallet,
-    OraclePallet, RedeemPallet, ReplacePallet, SecurityPallet, TimestampPallet, UtilFuncs, VaultRegistryPallet,
-    DEFAULT_SPEC_NAME, SS58_PREFIX,
+    CollateralBalancesPallet, FeePallet, FeeRateUpdateReceiver, InterBtcParachain, OraclePallet,
+    SecurityPallet, TimestampPallet, DEFAULT_SPEC_NAME, SS58_PREFIX, UtilFuncs
 };
 pub use shutdown::{ShutdownReceiver, ShutdownSender};
 pub use sp_arithmetic::{traits as FixedPointTraits, FixedI128, FixedPointNumber, FixedU128};
@@ -41,6 +40,8 @@ pub use std::collections::btree_set::BTreeSet;
 use std::{marker::PhantomData, time::Duration};
 use subxt::{config::polkadot::PolkadotExtrinsicParams, subxt, Config};
 pub use types::*;
+pub use node_primitives::{TokenSymbol,CurrencyId};
+
 pub const TX_FEES: u128 = 2000000000;
 pub const MILLISECS_PER_BLOCK: u64 = 12000;
 pub const BLOCK_INTERVAL: Duration = Duration::from_millis(MILLISECS_PER_BLOCK);
@@ -169,33 +170,37 @@ pub const DISABLE_DIFFICULTY_CHECK: &str = "DisableDifficultyCheck";
     subxt(
         runtime_metadata_path = "metadata-parachain-bifrost.scale",
         derive_for_all_types = "Clone",
-        derive_for_type(path = "bitcoin::address::PublicKey", derive = "Eq, PartialEq"),
-        derive_for_type(path = "bitcoin::types::H256Le", derive = "Eq, PartialEq"),
-        derive_for_type(path = "interbtc_primitives::issue::IssueRequestStatus", derive = "Eq, PartialEq"),
-        derive_for_type(path = "interbtc_primitives::redeem::RedeemRequestStatus", derive = "Eq, PartialEq"),
-        derive_for_type(
-            path = "interbtc_primitives::replace::ReplaceRequestStatus",
-            derive = "Eq, PartialEq"
-        ),
-        derive_for_type(path = "interbtc_primitives::VaultCurrencyPair", derive = "Eq, PartialEq"),
-        derive_for_type(path = "interbtc_primitives::VaultId", derive = "Eq, PartialEq"),
-        substitute_type(path = "primitive_types::H256", with = "::subxt::utils::Static<crate::H256>"),
-        substitute_type(path = "primitive_types::U256", with = "::subxt::utils::Static<crate::U256>"),
-        substitute_type(path = "primitive_types::H160", with = "::subxt::utils::Static<crate::H160>"),
+        // derive_for_type(path = "bitcoin::address::PublicKey", derive = "Eq, PartialEq"),
+        // derive_for_type(path = "bitcoin::types::H256Le", derive = "Eq, PartialEq"),
+        // derive_for_type(path = "interbtc_primitives::issue::IssueRequestStatus", derive = "Eq, PartialEq"),
+        // derive_for_type(path = "interbtc_primitives::redeem::RedeemRequestStatus", derive = "Eq, PartialEq"),
+        // derive_for_type(
+        //     path = "interbtc_primitives::replace::ReplaceRequestStatus",
+        //     derive = "Eq, PartialEq"
+        // ),
+        // derive_for_type(path = "interbtc_primitives::VaultCurrencyPair", derive = "Eq, PartialEq"),
+        // derive_for_type(path = "interbtc_primitives::VaultId", derive = "Eq, PartialEq"),
+        // substitute_type(path = "primitive_types::H256", with = "::subxt::utils::Static<crate::H256>"),
+        // substitute_type(path = "primitive_types::U256", with = "::subxt::utils::Static<crate::U256>"),
+        // substitute_type(path = "primitive_types::H160", with = "::subxt::utils::Static<crate::H160>"),
         substitute_type(path = "sp_core::crypto::AccountId32", with = "crate::AccountId"),
         substitute_type(
             path = "sp_arithmetic::fixed_point::FixedU128",
             with = "::subxt::utils::Static<crate::FixedU128>"
         ),
-        substitute_type(
-            path = "sp_arithmetic::per_things::Permill",
-            with = "::subxt::utils::Static<crate::Ratio>"
+        // substitute_type(
+        //     path = "sp_arithmetic::per_things::Permill",
+        //     with = "::subxt::utils::Static<crate::Ratio>"
+        // ),
+        // substitute_type(
+        //     path = "bitcoin::address::Address",
+        //     with = "::subxt::utils::Static<crate::BtcAddress>"
+        // ),
+        // substitute_type(path = "node_primitives::currency::CurrencyId", with = "crate::CurrencyId"),
+		substitute_type(
+            path = "node_primitives::currency::CurrencyId",
+            with = "::subxt::utils::Static<crate::CurrencyId>"
         ),
-        substitute_type(
-            path = "bitcoin::address::Address",
-            with = "::subxt::utils::Static<crate::BtcAddress>"
-        ),
-        substitute_type(path = "interbtc_primitives::CurrencyId", with = "crate::CurrencyId"),
         substitute_type(
             path = "frame_support::traits::misc::WrapperKeepOpaque",
             with = "::subxt::utils::Static<crate::WrapperKeepOpaque>"
@@ -240,26 +245,26 @@ impl Config for InterBtcRuntime {
     type ExtrinsicParams = PolkadotExtrinsicParams<Self>;
 }
 
-pub fn parse_collateral_currency(src: &str) -> Result<CurrencyId, Error> {
-    match src.to_uppercase().as_str() {
-        id if id == KSM.symbol() => Ok(Token(KSM)),
-        id if id == DOT.symbol() => Ok(Token(DOT)),
-        x => parse_native_currency(x),
-    }
-}
+// pub fn parse_collateral_currency(src: &str) -> Result<CurrencyId, Error> {
+//     match src.to_uppercase().as_str() {
+//         id if id == KSM.symbol() => Ok(Token(KSM)),
+//         id if id == DOT.symbol() => Ok(Token(DOT)),
+//         x => parse_native_currency(x),
+//     }
+// }
 
-pub fn parse_native_currency(src: &str) -> Result<CurrencyId, Error> {
-    match src.to_uppercase().as_str() {
-        id if id == KINT.symbol() => Ok(Token(KINT)),
-        id if id == INTR.symbol() => Ok(Token(INTR)),
-        _ => Err(Error::InvalidCurrency),
-    }
-}
+// pub fn parse_native_currency(src: &str) -> Result<CurrencyId, Error> {
+//     match src.to_uppercase().as_str() {
+//         id if id == KINT.symbol() => Ok(Token(KINT)),
+//         id if id == INTR.symbol() => Ok(Token(INTR)),
+//         _ => Err(Error::InvalidCurrency),
+//     }
+// }
 
-pub fn parse_wrapped_currency(src: &str) -> Result<CurrencyId, Error> {
-    match src.to_uppercase().as_str() {
-        id if id == KBTC.symbol() => Ok(Token(KBTC)),
-        id if id == IBTC.symbol() => Ok(Token(IBTC)),
-        _ => Err(Error::InvalidCurrency),
-    }
-}
+// pub fn parse_wrapped_currency(src: &str) -> Result<CurrencyId, Error> {
+//     match src.to_uppercase().as_str() {
+//         id if id == KBTC.symbol() => Ok(Token(KBTC)),
+//         id if id == IBTC.symbol() => Ok(Token(IBTC)),
+//         _ => Err(Error::InvalidCurrency),
+//     }
+// }

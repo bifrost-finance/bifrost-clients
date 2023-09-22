@@ -563,6 +563,12 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "e3b5ca7a04898ad4bcd41c90c5285445ff5b791899bb1b0abdd2a2aa791211d7"
 
 [[package]]
+name = "bytemuck"
+version = "1.14.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "374d28ec25809ee0e23827c2ab573d729e293f281dfe393500e7ad618baa61c6"
+
+[[package]]
 name = "byteorder"
 version = "1.4.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -856,6 +862,23 @@ checksum = "b1d1a86f49236c215f271d40892d5fc950490551400b02ef360692c29815c714"
 dependencies = [
  "generic-array 0.14.7",
  "subtle",
+]
+
+[[package]]
+name = "cumulus-primitives-core"
+version = "0.1.0"
+source = "git+https://github.com/paritytech/cumulus?branch=polkadot-v0.9.42#f603a61ff370fc33740c9373833c3c6ba1486846"
+dependencies = [
+ "parity-scale-codec",
+ "polkadot-core-primitives",
+ "polkadot-parachain",
+ "polkadot-primitives",
+ "scale-info",
+ "sp-api",
+ "sp-runtime",
+ "sp-std 5.0.0",
+ "sp-trie",
+ "xcm",
 ]
 
 [[package]]
@@ -1394,6 +1417,31 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "6c2141d6d6c8512188a7891b4b01590a45f6dac67afb4f255c4124dbb86d4eaa"
 
 [[package]]
+name = "frame-benchmarking"
+version = "4.0.0-dev"
+source = "git+https://github.com/paritytech/substrate?branch=polkadot-v0.9.42#ff24c60ac7d9f87727ecdd0ded9a80c56e4f4b65"
+dependencies = [
+ "frame-support",
+ "frame-support-procedural",
+ "frame-system",
+ "linregress",
+ "log",
+ "parity-scale-codec",
+ "paste",
+ "scale-info",
+ "serde",
+ "sp-api",
+ "sp-application-crypto",
+ "sp-core",
+ "sp-io",
+ "sp-runtime",
+ "sp-runtime-interface",
+ "sp-std 5.0.0",
+ "sp-storage",
+ "static_assertions",
+]
+
+[[package]]
 name = "frame-metadata"
 version = "15.1.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1474,6 +1522,24 @@ dependencies = [
  "proc-macro2",
  "quote",
  "syn 2.0.27",
+]
+
+[[package]]
+name = "frame-system"
+version = "4.0.0-dev"
+source = "git+https://github.com/paritytech/substrate?branch=polkadot-v0.9.42#ff24c60ac7d9f87727ecdd0ded9a80c56e4f4b65"
+dependencies = [
+ "frame-support",
+ "log",
+ "parity-scale-codec",
+ "scale-info",
+ "serde",
+ "sp-core",
+ "sp-io",
+ "sp-runtime",
+ "sp-std 5.0.0",
+ "sp-version",
+ "sp-weights",
 ]
 
 [[package]]
@@ -1904,6 +1970,12 @@ name = "hex"
 version = "0.4.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "7f24254aa9a54b5c858eaee2f5bccdb46aaf0e486a595ed5fd8f86ba55232a70"
+
+[[package]]
+name = "hex-literal"
+version = "0.4.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "6fe2267d4ed49bc07b63801559be28c718ea06c4738b7a03c94df7386d2cde46"
 
 [[package]]
 name = "hex_lit"
@@ -2638,6 +2710,15 @@ dependencies = [
 ]
 
 [[package]]
+name = "linregress"
+version = "0.5.3"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "4de04dcecc58d366391f9920245b85ffa684558a5ef6e7736e754347c3aea9c2"
+dependencies = [
+ "nalgebra 0.32.3",
+]
+
+[[package]]
 name = "linux-raw-sys"
 version = "0.1.4"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -2860,13 +2941,29 @@ checksum = "462fffe4002f4f2e1f6a9dcf12cc1a6fc0e15989014efc02a941d3e0f5dc2120"
 dependencies = [
  "approx",
  "matrixmultiply",
- "nalgebra-macros",
+ "nalgebra-macros 0.1.0",
  "num-complex 0.4.3",
  "num-rational 0.4.1",
  "num-traits",
  "rand 0.8.5",
  "rand_distr",
- "simba",
+ "simba 0.5.1",
+ "typenum",
+]
+
+[[package]]
+name = "nalgebra"
+version = "0.32.3"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "307ed9b18cc2423f29e83f84fd23a8e73628727990181f18641a8b5dc2ab1caa"
+dependencies = [
+ "approx",
+ "matrixmultiply",
+ "nalgebra-macros 0.2.1",
+ "num-complex 0.4.3",
+ "num-rational 0.4.1",
+ "num-traits",
+ "simba 0.8.1",
  "typenum",
 ]
 
@@ -2875,6 +2972,17 @@ name = "nalgebra-macros"
 version = "0.1.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "01fcc0b8149b4632adc89ac3b7b31a12fb6099a0317a4eb2ebff574ef7de7218"
+dependencies = [
+ "proc-macro2",
+ "quote",
+ "syn 1.0.109",
+]
+
+[[package]]
+name = "nalgebra-macros"
+version = "0.2.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "91761aed67d03ad966ef783ae962ef9bbaca728d2dd7ceb7939ec110fffad998"
 dependencies = [
  "proc-macro2",
  "quote",
@@ -2927,6 +3035,25 @@ name = "no-std-compat"
 version = "0.4.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "b93853da6d84c2e3c7d730d6473e8817692dd89be387eb01b94d7f108ecb5b8c"
+
+[[package]]
+name = "node-primitives"
+version = "0.8.0"
+source = "git+https://github.com/bifrost-finance/bifrost?rev=00212e55affb870d752bf8c47c1ac00a37fe6b4b#00212e55affb870d752bf8c47c1ac00a37fe6b4b"
+dependencies = [
+ "bstringify",
+ "frame-support",
+ "frame-system",
+ "orml-oracle",
+ "parity-scale-codec",
+ "scale-info",
+ "serde",
+ "sp-core",
+ "sp-runtime",
+ "sp-std 5.0.0",
+ "xcm",
+ "zenlink-protocol",
+]
 
 [[package]]
 name = "nohash-hasher"
@@ -3210,6 +3337,7 @@ dependencies = [
  "futures 0.3.28",
  "git-version",
  "log",
+ "node-primitives",
  "reqwest",
  "runtime",
  "serde",
@@ -3219,6 +3347,88 @@ dependencies = [
  "statrs",
  "thiserror",
  "tokio",
+]
+
+[[package]]
+name = "orml-oracle"
+version = "0.4.1-dev"
+source = "git+https://github.com/open-web3-stack/open-runtime-module-library?rev=4ae0372e2c624e6acc98305564b9d395f70814c0#4ae0372e2c624e6acc98305564b9d395f70814c0"
+dependencies = [
+ "frame-support",
+ "frame-system",
+ "orml-traits",
+ "orml-utilities",
+ "parity-scale-codec",
+ "scale-info",
+ "serde",
+ "sp-application-crypto",
+ "sp-io",
+ "sp-runtime",
+ "sp-std 5.0.0",
+]
+
+[[package]]
+name = "orml-tokens"
+version = "0.4.1-dev"
+source = "git+https://github.com/open-web3-stack/open-runtime-module-library?rev=4ae0372e2c624e6acc98305564b9d395f70814c0#4ae0372e2c624e6acc98305564b9d395f70814c0"
+dependencies = [
+ "frame-support",
+ "frame-system",
+ "orml-traits",
+ "parity-scale-codec",
+ "scale-info",
+ "serde",
+ "sp-arithmetic",
+ "sp-runtime",
+ "sp-std 5.0.0",
+]
+
+[[package]]
+name = "orml-traits"
+version = "0.4.1-dev"
+source = "git+https://github.com/open-web3-stack/open-runtime-module-library?rev=4ae0372e2c624e6acc98305564b9d395f70814c0#4ae0372e2c624e6acc98305564b9d395f70814c0"
+dependencies = [
+ "frame-support",
+ "impl-trait-for-tuples",
+ "num-traits",
+ "orml-utilities",
+ "parity-scale-codec",
+ "scale-info",
+ "serde",
+ "sp-core",
+ "sp-io",
+ "sp-runtime",
+ "sp-std 5.0.0",
+ "xcm",
+]
+
+[[package]]
+name = "orml-utilities"
+version = "0.4.1-dev"
+source = "git+https://github.com/open-web3-stack/open-runtime-module-library?rev=4ae0372e2c624e6acc98305564b9d395f70814c0#4ae0372e2c624e6acc98305564b9d395f70814c0"
+dependencies = [
+ "frame-support",
+ "parity-scale-codec",
+ "scale-info",
+ "serde",
+ "sp-io",
+ "sp-runtime",
+ "sp-std 5.0.0",
+]
+
+[[package]]
+name = "pallet-balances"
+version = "4.0.0-dev"
+source = "git+https://github.com/paritytech/substrate?branch=polkadot-v0.9.42#ff24c60ac7d9f87727ecdd0ded9a80c56e4f4b65"
+dependencies = [
+ "frame-benchmarking",
+ "frame-support",
+ "frame-system",
+ "log",
+ "parity-scale-codec",
+ "scale-info",
+ "sp-runtime",
+ "sp-std 5.0.0",
 ]
 
 [[package]]
@@ -3391,6 +3601,61 @@ name = "pkg-config"
 version = "0.3.27"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "26072860ba924cbfa98ea39c8c19b4dd6a4a25423dbdf219c1eca91aa0cf6964"
+
+[[package]]
+name = "polkadot-core-primitives"
+version = "0.9.42"
+source = "git+https://github.com/paritytech/polkadot?branch=release-v0.9.42#6f991987c0b4cbbd7d4badc9ef08d83da5fefbfd"
+dependencies = [
+ "parity-scale-codec",
+ "scale-info",
+ "sp-core",
+ "sp-runtime",
+ "sp-std 5.0.0",
+]
+
+[[package]]
+name = "polkadot-parachain"
+version = "0.9.42"
+source = "git+https://github.com/paritytech/polkadot?branch=release-v0.9.42#6f991987c0b4cbbd7d4badc9ef08d83da5fefbfd"
+dependencies = [
+ "bounded-collections",
+ "derive_more",
+ "frame-support",
+ "parity-scale-codec",
+ "polkadot-core-primitives",
+ "scale-info",
+ "serde",
+ "sp-core",
+ "sp-runtime",
+ "sp-std 5.0.0",
+]
+
+[[package]]
+name = "polkadot-primitives"
+version = "0.9.42"
+source = "git+https://github.com/paritytech/polkadot?branch=release-v0.9.42#6f991987c0b4cbbd7d4badc9ef08d83da5fefbfd"
+dependencies = [
+ "bitvec",
+ "hex-literal",
+ "parity-scale-codec",
+ "polkadot-core-primitives",
+ "polkadot-parachain",
+ "scale-info",
+ "serde",
+ "sp-api",
+ "sp-application-crypto",
+ "sp-arithmetic",
+ "sp-authority-discovery",
+ "sp-consensus-slots",
+ "sp-core",
+ "sp-inherents",
+ "sp-io",
+ "sp-keystore",
+ "sp-runtime",
+ "sp-staking",
+ "sp-std 5.0.0",
+]
 
 [[package]]
 name = "ppv-lite86"
@@ -3948,6 +4213,7 @@ dependencies = [
  "jsonrpsee",
  "lazy_static",
  "log",
+ "node-primitives",
  "parity-scale-codec",
  "prometheus",
  "rand 0.7.3",
@@ -4080,6 +4346,15 @@ name = "ryu"
 version = "1.0.15"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "1ad4cc8da4ef723ed60bced201181d83791ad433213d8c24efffda1eec85d741"
+
+[[package]]
+name = "safe_arch"
+version = "0.7.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "f398075ce1e6a179b46f51bd88d0598b92b00d3551f1a2d4ac49e771b56ac354"
+dependencies = [
+ "bytemuck",
+]
 
 [[package]]
 name = "scale-bits"
@@ -4606,6 +4881,19 @@ dependencies = [
 ]
 
 [[package]]
+name = "simba"
+version = "0.8.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "061507c94fc6ab4ba1c9a0305018408e312e17c041eb63bef8aa726fa33aceae"
+dependencies = [
+ "approx",
+ "num-complex 0.4.3",
+ "num-traits",
+ "paste",
+ "wide",
+]
+
+[[package]]
 name = "slab"
 version = "0.4.8"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -4720,6 +5008,31 @@ dependencies = [
  "serde",
  "sp-std 5.0.0",
  "static_assertions",
+]
+
+[[package]]
+name = "sp-authority-discovery"
+version = "4.0.0-dev"
+source = "git+https://github.com/paritytech/substrate?branch=polkadot-v0.9.42#ff24c60ac7d9f87727ecdd0ded9a80c56e4f4b65"
+dependencies = [
+ "parity-scale-codec",
+ "scale-info",
+ "sp-api",
+ "sp-application-crypto",
+ "sp-runtime",
+ "sp-std 5.0.0",
+]
+
+[[package]]
+name = "sp-consensus-slots"
+version = "0.10.0-dev"
+source = "git+https://github.com/paritytech/substrate?branch=polkadot-v0.9.42#ff24c60ac7d9f87727ecdd0ded9a80c56e4f4b65"
+dependencies = [
+ "parity-scale-codec",
+ "scale-info",
+ "serde",
+ "sp-std 5.0.0",
+ "sp-timestamp",
 ]
 
 [[package]]
@@ -4887,6 +5200,7 @@ dependencies = [
  "futures 0.3.28",
  "parity-scale-codec",
  "parking_lot 0.12.1",
+ "serde",
  "sp-core",
  "sp-externalities",
  "thiserror",
@@ -5020,6 +5334,21 @@ dependencies = [
  "serde",
  "sp-debug-derive",
  "sp-std 5.0.0",
+]
+
+[[package]]
+name = "sp-timestamp"
+version = "4.0.0-dev"
+source = "git+https://github.com/paritytech/substrate?branch=polkadot-v0.9.42#ff24c60ac7d9f87727ecdd0ded9a80c56e4f4b65"
+dependencies = [
+ "async-trait",
+ "futures-timer",
+ "log",
+ "parity-scale-codec",
+ "sp-inherents",
+ "sp-runtime",
+ "sp-std 5.0.0",
+ "thiserror",
 ]
 
 [[package]]
@@ -5177,7 +5506,7 @@ checksum = "05bdbb8e4e78216a85785a85d3ec3183144f98d0097b9281802c019bb07a6f05"
 dependencies = [
  "approx",
  "lazy_static",
- "nalgebra",
+ "nalgebra 0.27.1",
  "num-traits",
  "rand 0.8.5",
 ]
@@ -6265,6 +6594,16 @@ dependencies = [
 ]
 
 [[package]]
+name = "wide"
+version = "0.7.11"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "aa469ffa65ef7e0ba0f164183697b89b854253fd31aeb92358b7b6155177d62f"
+dependencies = [
+ "bytemuck",
+ "safe_arch",
+]
+
+[[package]]
 name = "winapi"
 version = "0.3.9"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -6479,10 +6818,79 @@ dependencies = [
 ]
 
 [[package]]
+name = "xcm"
+version = "0.9.42"
+source = "git+https://github.com/paritytech/polkadot?branch=release-v0.9.42#6f991987c0b4cbbd7d4badc9ef08d83da5fefbfd"
+dependencies = [
+ "bounded-collections",
+ "derivative",
+ "impl-trait-for-tuples",
+ "log",
+ "parity-scale-codec",
+ "scale-info",
+ "serde",
+ "sp-weights",
+ "xcm-procedural",
+]
+
+[[package]]
+name = "xcm-executor"
+version = "0.9.42"
+source = "git+https://github.com/paritytech/polkadot?branch=release-v0.9.42#6f991987c0b4cbbd7d4badc9ef08d83da5fefbfd"
+dependencies = [
+ "environmental",
+ "frame-support",
+ "impl-trait-for-tuples",
+ "log",
+ "parity-scale-codec",
+ "sp-arithmetic",
+ "sp-core",
+ "sp-io",
+ "sp-runtime",
+ "sp-std 5.0.0",
+ "sp-weights",
+ "xcm",
+]
+
+[[package]]
+name = "xcm-procedural"
+version = "0.9.42"
+source = "git+https://github.com/paritytech/polkadot?branch=release-v0.9.42#6f991987c0b4cbbd7d4badc9ef08d83da5fefbfd"
+dependencies = [
+ "Inflector",
+ "proc-macro2",
+ "quote",
+ "syn 2.0.27",
+]
+
+[[package]]
 name = "yap"
 version = "0.10.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "e2a7eb6d82a11e4d0b8e6bda8347169aff4ccd8235d039bba7c47482d977dcf7"
+
+[[package]]
+name = "zenlink-protocol"
+version = "0.4.4"
+source = "git+https://github.com/zenlinkpro/Zenlink-DEX-Module?rev=c32bb5f63bcd06dc49ca8a48dd7b7a0f78c358bf#c32bb5f63bcd06dc49ca8a48dd7b7a0f78c358bf"
+dependencies = [
+ "cumulus-primitives-core",
+ "frame-support",
+ "frame-system",
+ "log",
+ "orml-tokens",
+ "orml-traits",
+ "pallet-balances",
+ "parity-scale-codec",
+ "scale-info",
+ "serde",
+ "sp-arithmetic",
+ "sp-core",
+ "sp-runtime",
+ "sp-std 5.0.0",
+ "xcm",
+ "xcm-executor",
+]
 
 [[package]]
 name = "zeroize"

@@ -12,12 +12,13 @@ use futures::{future::join_all, stream::StreamExt};
 use git_version::git_version;
 use runtime::{
     cli::{parse_duration_ms, ProviderUserOpts},
-    CurrencyId, FixedU128, InterBtcParachain, InterBtcSigner, OracleKey, OraclePallet, ShutdownSender, TryFromSymbol,
+     FixedU128, InterBtcParachain, InterBtcSigner, OracleKey, OraclePallet, ShutdownSender,
 };
 use signal_hook::consts::*;
 use signal_hook_tokio::Signals;
 use std::{path::PathBuf, time::Duration};
 use tokio::{join, time::sleep};
+use node_primitives::{TokenSymbol,CurrencyId};
 
 const VERSION: &str = git_version!(args = ["--tags"]);
 const AUTHORS: &str = env!("CARGO_PKG_AUTHORS");
@@ -34,7 +35,7 @@ struct Opts {
     account_info: ProviderUserOpts,
 
     /// Parachain URL, can be over WebSockets or HTTP
-    #[clap(long, default_value = "ws://43.129.192.41:8021")]
+    #[clap(long, default_value = "ws://172.19.0.14:9866")]
     btc_parachain_url: String,
 
     /// Timeout in milliseconds to wait for connection to btc-parachain
@@ -88,28 +89,28 @@ fn get_exponential_backoff() -> ExponentialBackoff {
 }
 
 async fn submit_bitcoin_fees(parachain_rpc: &InterBtcParachain, maybe_bitcoin_fee: Option<f64>) -> Result<(), Error> {
-    let bitcoin_fee = if let Some(bitcoin_fee) = maybe_bitcoin_fee {
-        bitcoin_fee
-    } else {
-        log::warn!("No fee estimate to submit");
-        return Ok(());
-    };
+    // let bitcoin_fee = if let Some(bitcoin_fee) = maybe_bitcoin_fee {
+    //     bitcoin_fee
+    // } else {
+    //     log::warn!("No fee estimate to submit");
+    //     return Ok(());
+    // };
 
-    log::info!(
-        "Attempting to set fee estimate: {} sat/byte ({})",
-        bitcoin_fee,
-        chrono::offset::Local::now()
-    );
+    // log::info!(
+    //     "Attempting to set fee estimate: {} sat/byte ({})",
+    //     bitcoin_fee,
+    //     chrono::offset::Local::now()
+    // );
 
-    parachain_rpc
-        .set_bitcoin_fees(FixedU128::from_float(bitcoin_fee))
-        .await?;
+    // parachain_rpc
+    //     .set_bitcoin_fees(FixedU128::from_float(bitcoin_fee))
+    //     .await?;
 
-    log::info!(
-        "Successfully set fee estimate: {} sat/byte ({})",
-        bitcoin_fee,
-        chrono::offset::Local::now()
-    );
+    // log::info!(
+    //     "Successfully set fee estimate: {} sat/byte ({})",
+    //     bitcoin_fee,
+    //     chrono::offset::Local::now()
+    // );
 
     Ok(())
 }
@@ -125,9 +126,10 @@ async fn submit_exchange_rate(
         chrono::offset::Local::now()
     );
 
-    let currency_id =
-        CurrencyId::try_from_symbol(currency_pair_and_price.pair.quote.symbol()).map_err(Error::RuntimeError)?;
-    let key = OracleKey::ExchangeRate(currency_id);
+    // let currency_id =
+    //     CurrencyId::try_from_symbol(currency_pair_and_price.pair.quote.symbol()).map_err(Error::RuntimeError)?;
+    let native_currency_id = CurrencyId::Native(TokenSymbol::BNC);
+    let key = native_currency_id; // OracleKey::ExchangeRate(currency_id);
     let exchange_rate = currency_pair_and_price.exchange_rate(currency_store)?;
     parachain_rpc.feed_values(vec![(key, exchange_rate)]).await?;
 

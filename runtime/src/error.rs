@@ -133,22 +133,22 @@ impl Error {
         false
     }
 
-    pub fn is_duplicate_block(&self) -> bool {
-        self.is_module_err(BTC_RELAY_MODULE, &format!("{:?}", BtcRelayPalletError::DuplicateBlock))
-    }
+    // pub fn is_duplicate_block(&self) -> bool {
+    //     self.is_module_err(BTC_RELAY_MODULE, &format!("{:?}", BtcRelayPalletError::DuplicateBlock))
+    // }
 
-    pub fn is_invalid_chain_id(&self) -> bool {
-        self.is_module_err(BTC_RELAY_MODULE, &format!("{:?}", BtcRelayPalletError::InvalidChainID))
-    }
+    // pub fn is_invalid_chain_id(&self) -> bool {
+    //     self.is_module_err(BTC_RELAY_MODULE, &format!("{:?}", BtcRelayPalletError::InvalidChainID))
+    // }
 
-    pub fn is_issue_completed(&self) -> bool {
-        self.is_module_err(ISSUE_MODULE, &format!("{:?}", IssuePalletError::IssueCompleted))
-    }
+    // pub fn is_issue_completed(&self) -> bool {
+    //     self.is_module_err(ISSUE_MODULE, &format!("{:?}", IssuePalletError::IssueCompleted))
+    // }
 
     pub fn is_threshold_not_set(&self) -> bool {
         self.is_module_err(
             VAULT_REGISTRY_MODULE,
-            &format!("{:?}", VaultRegistryPalletError::ThresholdNotSet),
+            &format!("{:?}", SystemPalletError::CallFiltered),
         )
     }
 

@@ -110,7 +110,8 @@ pub struct ConnectionOpts {
     )]
     #[cfg_attr(
         feature = "parachain-metadata-bifrost",
-        clap(long, default_value = "wss://bifrost.test-lend-market.liebi.com/ws")
+        // clap(long, default_value = "wss://api-kusama.interlay.io:443/parachain")
+        clap(long, default_value = "wss://bifrost-rpc.devnet.liebi.com/ws")
     )]
     pub btc_parachain_url: String,
 

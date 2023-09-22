@@ -27,6 +27,8 @@ async-trait = "0.1.40"
 statrs = "0.15"
 serde_json = "1.0"
 serde = "1.0"
+node-primitives = { git = "https://github.com/bifrost-finance/bifrost", rev = "00212e55affb870d752bf8c47c1ac00a37fe6b4b" }
+
 
 # Workspace dependencies
 runtime = { path = "../runtime" }

@@ -4,8 +4,11 @@ use crate::{
     Config, InterBtcRuntime, RuntimeCurrencyInfo, SS58_PREFIX,
 };
 pub use currency_id::CurrencyIdExt;
-pub use h256_le::RichH256Le;
-pub use metadata_aliases::*;
+// pub use h256_le::RichH256Le;
+// #[cfg(feature = "parachain-metadata-interlay", feature = "parachain-metadata-kintsugi")]
+// pub use metadata_aliases::*;
+#[cfg(feature = "parachain-metadata-bifrost")]
+pub use bifrost_metadata_aliases::*;
 pub use primitives::{
     CurrencyId,
     CurrencyId::{ForeignAsset, LendToken, Token},
@@ -35,6 +38,7 @@ pub(crate) enum StorageMapHasher {
     Twox_64,
 }
 
+#[cfg(feature = "parachain-metadata-kintsugi")]
 mod metadata_aliases {
     use super::*;
     pub use metadata::runtime_types::bitcoin::address::PublicKey as BtcPublicKey;
@@ -164,27 +168,50 @@ mod metadata_aliases {
     pub type EncodedCall = metadata::runtime_types::interlay_runtime_parachain::RuntimeCall;
     #[cfg(feature = "parachain-metadata-kintsugi")]
     pub type EncodedCall = metadata::runtime_types::kintsugi_runtime_parachain::RuntimeCall;
-    #[cfg(feature = "parachain-metadata-bifrost")]
-    pub type EncodedCall = metadata::runtime_types::bifrost_runtime_parachain::RuntimeCall;
+    // #[cfg(feature = "parachain-metadata-bifrost")]
+    // pub type EncodedCall = metadata::runtime_types::bifrost_runtime_parachain::RuntimeCall;
 
     pub use metadata::runtime_types::security::pallet::Call as SecurityCall;
 
     pub use metadata::runtime_types::bounded_collections::bounded_vec::BoundedVec;
 }
 
-pub struct RawBlockHeader(pub Vec<u8>);
+#[cfg(feature = "parachain-metadata-bifrost")]
+mod bifrost_metadata_aliases {
+	use super::*;
+	use subxt::{storage::address::StaticStorageMapKey, utils::Static};
 
-impl RawBlockHeader {
-    pub fn hash(&self) -> crate::H256Le {
-        module_bitcoin::utils::sha256d_le(&self.0).into()
-    }
+    #[cfg(feature = "parachain-metadata-bifrost")]
+    pub type EncodedCall = metadata::runtime_types::bifrost_kusama_runtime::RuntimeCall;
+	// pub use metadata::runtime_types::node_primitives::CurrencyId as OracleKey;
+	pub use node_primitives::CurrencyId as OracleKey;
+	// pub use crate::metadata::runtime_types::node_primitives::CurrencyId as OracleKey;
+	pub type InterBtcHeader = <InterBtcRuntime as Config>::Header;
+	pub type KeyStorageAddress<T> = Address<StaticStorageMapKey, T, (), (), Yes>;
+	use crate::metadata::runtime_types::bifrost_asset_registry::pallet::AssetMetadata;
+	// pub use interbtc_primitives::VaultId;
+	// pub type VaultId = metadata::runtime_types::interbtc_primitives::VaultId<AccountId, CurrencyId>;
+    pub use metadata::runtime_types::{
+        frame_system::pallet::Error as SystemPalletError, 
+		// issue::pallet::Error as IssuePalletError,
+        // redeem::pallet::Error as RedeemPalletError, security::pallet::Error as SecurityPalletError,
+        // vault_registry::pallet::Error as VaultRegistryPalletError,
+    };
 }
 
-impl From<[u8; 33]> for crate::BtcPublicKey {
-    fn from(input: [u8; 33]) -> Self {
-        crate::BtcPublicKey(input)
-    }
-}
+// pub struct RawBlockHeader(pub Vec<u8>);
+
+// impl RawBlockHeader {
+//     pub fn hash(&self) -> crate::H256Le {
+//         module_bitcoin::utils::sha256d_le(&self.0).into()
+//     }
+// }
+
+// impl From<[u8; 33]> for crate::BtcPublicKey {
+//     fn from(input: [u8; 33]) -> Self {
+//         crate::BtcPublicKey(input)
+//     }
+// }
 
 mod currency_id {
     use super::*;
@@ -218,130 +245,130 @@ mod account_id {
     }
 }
 
-mod vault_id {
-    use super::*;
+// mod vault_id {
+//     use super::*;
 
-    type RichVaultId = primitives::VaultId<AccountId, primitives::CurrencyId>;
+//     type RichVaultId = primitives::VaultId<AccountId, primitives::CurrencyId>;
 
-    impl crate::VaultId {
-        pub fn new(account_id: AccountId, collateral_currency: CurrencyId, wrapped_currency: CurrencyId) -> Self {
-            Self {
-                account_id,
-                currencies: VaultCurrencyPair {
-                    collateral: collateral_currency,
-                    wrapped: wrapped_currency,
-                },
-            }
-        }
+//     impl crate::VaultId {
+//         pub fn new(account_id: AccountId, collateral_currency: CurrencyId, wrapped_currency: CurrencyId) -> Self {
+//             Self {
+//                 account_id,
+//                 currencies: VaultCurrencyPair {
+//                     collateral: collateral_currency,
+//                     wrapped: wrapped_currency,
+//                 },
+//             }
+//         }
 
-        pub fn collateral_currency(&self) -> CurrencyId {
-            self.currencies.collateral
-        }
+//         pub fn collateral_currency(&self) -> CurrencyId {
+//             self.currencies.collateral
+//         }
 
-        pub fn wrapped_currency(&self) -> CurrencyId {
-            self.currencies.wrapped
-        }
-    }
+//         pub fn wrapped_currency(&self) -> CurrencyId {
+//             self.currencies.wrapped
+//         }
+//     }
 
-    impl PrettyPrint for VaultId {
-        fn pretty_print(&self) -> String {
-            let collateral_currency: CurrencyId = self.collateral_currency();
-            let wrapped_currency: CurrencyId = self.wrapped_currency();
-            format!(
-                "{}[{}->{}]",
-                self.account_id.pretty_print(),
-                collateral_currency.symbol().unwrap_or_default(),
-                wrapped_currency.symbol().unwrap_or_default(),
-            )
-        }
-    }
+//     impl PrettyPrint for VaultId {
+//         fn pretty_print(&self) -> String {
+//             let collateral_currency: CurrencyId = self.collateral_currency();
+//             let wrapped_currency: CurrencyId = self.wrapped_currency();
+//             format!(
+//                 "{}[{}->{}]",
+//                 self.account_id.pretty_print(),
+//                 collateral_currency.symbol().unwrap_or_default(),
+//                 wrapped_currency.symbol().unwrap_or_default(),
+//             )
+//         }
+//     }
 
-    impl From<crate::VaultId> for RichVaultId {
-        fn from(value: crate::VaultId) -> Self {
-            Self {
-                account_id: value.account_id,
-                currencies: primitives::VaultCurrencyPair {
-                    collateral: value.currencies.collateral,
-                    wrapped: value.currencies.wrapped,
-                },
-            }
-        }
-    }
+//     impl From<crate::VaultId> for RichVaultId {
+//         fn from(value: crate::VaultId) -> Self {
+//             Self {
+//                 account_id: value.account_id,
+//                 currencies: primitives::VaultCurrencyPair {
+//                     collateral: value.currencies.collateral,
+//                     wrapped: value.currencies.wrapped,
+//                 },
+//             }
+//         }
+//     }
 
-    impl From<RichVaultId> for crate::VaultId {
-        fn from(value: RichVaultId) -> Self {
-            Self {
-                account_id: value.account_id,
-                currencies: crate::VaultCurrencyPair {
-                    collateral: value.currencies.collateral,
-                    wrapped: value.currencies.wrapped,
-                },
-            }
-        }
-    }
+//     impl From<RichVaultId> for crate::VaultId {
+//         fn from(value: RichVaultId) -> Self {
+//             Self {
+//                 account_id: value.account_id,
+//                 currencies: crate::VaultCurrencyPair {
+//                     collateral: value.currencies.collateral,
+//                     wrapped: value.currencies.wrapped,
+//                 },
+//             }
+//         }
+//     }
 
-    impl serde::Serialize for crate::VaultId {
-        fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
-        where
-            S: serde::Serializer,
-        {
-            let value: RichVaultId = self.clone().into();
-            value.serialize(serializer)
-        }
-    }
+//     impl serde::Serialize for crate::VaultId {
+//         fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
+//         where
+//             S: serde::Serializer,
+//         {
+//             let value: RichVaultId = self.clone().into();
+//             value.serialize(serializer)
+//         }
+//     }
 
-    impl<'de> serde::Deserialize<'de> for crate::VaultId {
-        fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
-        where
-            D: serde::Deserializer<'de>,
-        {
-            let value = RichVaultId::deserialize(deserializer)?;
-            Ok(value.into())
-        }
-    }
+//     impl<'de> serde::Deserialize<'de> for crate::VaultId {
+//         fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
+//         where
+//             D: serde::Deserializer<'de>,
+//         {
+//             let value = RichVaultId::deserialize(deserializer)?;
+//             Ok(value.into())
+//         }
+//     }
 
-    impl std::hash::Hash for crate::VaultId {
-        fn hash<H: std::hash::Hasher>(&self, state: &mut H) {
-            let vault: RichVaultId = self.clone().into();
-            vault.hash(state)
-        }
-    }
-}
+//     impl std::hash::Hash for crate::VaultId {
+//         fn hash<H: std::hash::Hasher>(&self, state: &mut H) {
+//             let vault: RichVaultId = self.clone().into();
+//             vault.hash(state)
+//         }
+//     }
+// }
 
-mod h256_le {
-    use super::*;
+// mod h256_le {
+//     use super::*;
 
-    pub type RichH256Le = module_bitcoin::types::H256Le;
+//     pub type RichH256Le = module_bitcoin::types::H256Le;
 
-    impl From<RichH256Le> for crate::H256Le {
-        fn from(value: RichH256Le) -> Self {
-            Self {
-                content: value.to_bytes_le(),
-            }
-        }
-    }
+//     impl From<RichH256Le> for crate::H256Le {
+//         fn from(value: RichH256Le) -> Self {
+//             Self {
+//                 content: value.to_bytes_le(),
+//             }
+//         }
+//     }
 
-    impl From<crate::H256Le> for RichH256Le {
-        fn from(value: crate::H256Le) -> Self {
-            Self::from_bytes_le(&value.content)
-        }
-    }
+//     impl From<crate::H256Le> for RichH256Le {
+//         fn from(value: crate::H256Le) -> Self {
+//             Self::from_bytes_le(&value.content)
+//         }
+//     }
 
-    impl crate::H256Le {
-        pub fn from_bytes_le(bytes: &[u8]) -> H256Le {
-            RichH256Le::from_bytes_le(bytes).into()
-        }
-        pub fn to_bytes_le(&self) -> [u8; 32] {
-            RichH256Le::to_bytes_le(&self.clone().into())
-        }
-        pub fn is_zero(&self) -> bool {
-            RichH256Le::is_zero(&self.clone().into())
-        }
-        pub fn to_hex_le(&self) -> String {
-            RichH256Le::to_hex_le(&self.clone().into())
-        }
-    }
-}
+//     impl crate::H256Le {
+//         pub fn from_bytes_le(bytes: &[u8]) -> H256Le {
+//             RichH256Le::from_bytes_le(bytes).into()
+//         }
+//         pub fn to_bytes_le(&self) -> [u8; 32] {
+//             RichH256Le::to_bytes_le(&self.clone().into())
+//         }
+//         pub fn is_zero(&self) -> bool {
+//             RichH256Le::is_zero(&self.clone().into())
+//         }
+//         pub fn to_hex_le(&self) -> String {
+//             RichH256Le::to_hex_le(&self.clone().into())
+//         }
+//     }
+// }
 
 mod dispatch_error {
     use crate::metadata::{
